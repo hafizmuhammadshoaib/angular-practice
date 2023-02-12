@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
+import { Location } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component, NO_ERRORS_SCHEMA, NgZone } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
@@ -13,9 +14,20 @@ describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
 
+  @Component({
+    template: ''
+  })
+  class DummyComponent {
+  }
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
+      imports: [
+        HttpClientTestingModule,
+        RouterTestingModule.withRoutes([
+          { path: 'detail/:id', component: DummyComponent }
+         ])
+      ],
       declarations: [DashboardComponent],
       providers: [HeroService],
       schemas: [NO_ERRORS_SCHEMA],
@@ -77,5 +89,25 @@ describe('DashboardComponent', () => {
     );
 
     expect(element?.nativeElement?.textContent).toBe('Something Went Wrong!');
+  });
+
+  it('should navigate to link with hero id', () => {
+    const location = TestBed.inject(Location);
+    const heroService = TestBed.inject(HeroService);
+    const spy = jest.spyOn(heroService, 'getHeroes');
+    spy.mockReturnValue(of(HEROES));
+
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    const elements = fixture.debugElement.queryAll(By.css('a'));
+
+    const element = elements?.find((element) => {
+      return element?.nativeElement?.textContent === HEROES[1].name;
+    });
+    element.nativeElement.click();
+    fixture.whenStable().then(() => {
+      expect(location.path()).toEqual(`/detail/${HEROES[1].id}`);
+    });
   });
 });

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';
+import { catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,12 +20,14 @@ export class DashboardComponent implements OnInit {
   }
 
   getHeroes(): void {
-    this.heroService.getHeroes().subscribe(
-      (heroes) => (this.heroes = heroes.slice(1, 5)),
-      (error) => {
-        console.log('hererere')
-        this.isError = true;
-      },
-    );
+    this.heroService
+      .getHeroes()
+      .pipe(
+        catchError(() => {
+          this.isError = true;
+          return of([]);
+        }),
+      )
+      .subscribe((heroes) => (this.heroes = heroes.slice(1, 5)));
   }
 }
