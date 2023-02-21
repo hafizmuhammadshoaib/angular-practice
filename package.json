@@ -7,7 +7,8 @@
     "build": "ng build",
     "test": "jest",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "run-json-server": "npx json-server --watch db.json --port 3000"
   },
   "private": true,
   "dependencies": {

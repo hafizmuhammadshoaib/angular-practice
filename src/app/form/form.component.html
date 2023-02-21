@@ -1,0 +1,36 @@
+<form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+  <div formGroupName="myGroup">
+    <div>
+      <label for="input1">Input 1:</label>
+      <input id="input1" type="text" formControlName="input1">
+      <div *ngIf="myForm.get('myGroup.input1').invalid && (myForm.get('myGroup.input1').dirty || myForm.get('myGroup.input1').touched)">
+        <div *ngIf="myForm.get('myGroup.input1').errors.required">Input 1 is required.</div>
+      </div>
+    </div>
+    <div>
+      <label for="select1">Select 1:</label>
+      <select id="select1" formControlName="select1">
+        <option value="">Select an option</option>
+        <option value="option1">Option 1</option>
+        <option value="option2">Option 2</option>
+      </select>
+      <div *ngIf="myForm.get('myGroup.select1').invalid && (myForm.get('myGroup.select1').dirty || myForm.get('myGroup.select1').touched)">
+        <div *ngIf="myForm.get('myGroup.select1').errors.required">Select 1 is required.</div>
+      </div>
+    </div>
+    <div formArrayName="dynamicInputs">
+      <div *ngFor="let control of dynamicInputs.controls; let i = index" [formGroupName]="i">
+        <div>
+          <label for="dynamicInput{{i}}">Dynamic Input {{i+1}}:</label>
+          <input id="dynamicInput{{i}}" type="text" formControlName="value">
+          <div *ngIf="control.get('value').invalid && (control.get('value').dirty || control.get('value').touched)">
+            <div *ngIf="control.get('value').errors.required">Dynamic Input {{i+1}} is required.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button type="button" (click)="addDynamicInput()">Add Dynamic Input</button>
+    <br><br>
+    <button type="submit" >Submit</button>
+  </div>
+</form>
